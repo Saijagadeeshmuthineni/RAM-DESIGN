@@ -1,10 +1,6 @@
 module synchronous_ram_tb;
-
-    // Parameters
     parameter DATA_WIDTH = 8;
     parameter ADDR_WIDTH = 4;
-
-    // Testbench signals
     reg clk;
     reg rst;
     reg write_enable;
@@ -12,8 +8,6 @@ module synchronous_ram_tb;
     reg [ADDR_WIDTH-1:0] address;
     reg [DATA_WIDTH-1:0] write_data;
     wire [DATA_WIDTH-1:0] read_data;
-
-    // Instantiate the synchronous RAM module
     synchronous_ram #(
         .DATA_WIDTH(DATA_WIDTH),
         .ADDR_WIDTH(ADDR_WIDTH)
@@ -30,65 +24,45 @@ module synchronous_ram_tb;
     $dumpfile ("dump.vcd");
     $dumpvars(1);
                end
-    // Clock generation
     initial begin
         clk = 0;
-        forever #5 clk = ~clk; // 10 time unit clock period
+        forever #5 clk = ~clk;
     end
-
-    // Test procedure
     initial begin
-        // Initialize signals
         rst = 0;
         write_enable = 0;
         read_enable = 0;
         address = 0;
         write_data = 0;
-
-        // Apply reset
         rst = 1;
         #10;
         rst = 0;
-
-        // Write data to memory
         @(posedge clk);
         write_enable = 1;
         address = 4'h1;
         write_data = 8'hA5;
         @(posedge clk);
         write_enable = 0;
-
-        // Read data from memory
         @(posedge clk);
         read_enable = 1;
         address = 4'h1;
         @(posedge clk);
         read_enable = 0;
-
-        // Display read data
         #1;
         $display("Read Data at Address %h: %h", address, read_data);
-
-        // Write to another address
         @(posedge clk);
         write_enable = 1;
         address = 4'h2;
         write_data = 8'h3C;
         @(posedge clk);
         write_enable = 0;
-
-        // Read from another address
         @(posedge clk);
         read_enable = 1;
         address = 4'h2;
         @(posedge clk);
         read_enable = 0;
-
-        // Display read data
         #1;
         $display("Read Data at Address %h: %h", address, read_data);
-
-        // End simulation
         #10;
         $stop;
     end
