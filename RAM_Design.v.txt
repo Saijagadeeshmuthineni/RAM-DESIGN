@@ -1,0 +1,37 @@
+module synchronous_ram #(
+    parameter DATA_WIDTH = 8,   // Width of data
+    parameter ADDR_WIDTH = 4   // Width of address
+) (
+    input wire clk,              // Clock signal
+    input wire rst,              // Reset signal (active high)
+    input wire write_enable,     // Write enable signal
+    input wire read_enable,      // Read enable signal
+    input wire [ADDR_WIDTH-1:0] address, // Address bus
+    input wire [DATA_WIDTH-1:0] write_data, // Data to write
+    output reg [DATA_WIDTH-1:0] read_data   // Data read output
+);
+
+    // Memory declaration
+    reg [DATA_WIDTH-1:0] ram [2**ADDR_WIDTH-1:0];
+
+    // Synchronous write operation
+    always @(posedge clk) begin
+        if (rst) begin
+            // Reset logic (clear memory, optional based on use case)
+            integer i;
+            for (i = 0; i < 2**ADDR_WIDTH; i = i + 1) begin
+                ram[i] <= 0;
+            end
+        end else if (write_enable) begin
+            ram[address] <= write_data; // Write data to the specified address
+        end
+    end
+
+    // Synchronous read operation
+    always @(posedge clk) begin
+        if (read_enable) begin
+            read_data <= ram[address]; // Read data from the specified address
+        end
+    end
+
+endmodule
